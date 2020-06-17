@@ -18,7 +18,7 @@
   (.reload js/location))
 
 (rf/reg-fx
- :redirect
+ ::redirect
  (fn [opts]
    (redirect (str (:uri opts)
                   (when-let [params (:params opts)]

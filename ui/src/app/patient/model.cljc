@@ -12,8 +12,7 @@
      (= :deinit phase)
      {}
      (or (= :params phase) (= :init phase))
-     {:dispatch [::set-loading-status-true]
-      :xhr/fetch {:uri "/Patient/$search"
+     {:xhr/fetch {:uri "/Patient/$search"
                   :params {:search-query (if (get-in params [:params :q])
                                            (str/replace (get-in params [:params :q]) #" " "%20")
                                            "%20")}

@@ -116,8 +116,8 @@
      {:on-click #(rf/dispatch [::model/save-changes])}
      "Сохранить"]
     [:button.btn.btn-outline-danger.mt-3.mb-2
-     {:on-click #(rf/dispatch [::model/cancel-editing])}
-     "Отмена"]]])
+     {:on-click #(rf/dispatch [::model/cancel-editing ::redirect/redirect])}
+      "Отмена"]]])
 
 (pages/reg-subs-page
  model/edit-index

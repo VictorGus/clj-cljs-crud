@@ -33,9 +33,9 @@
 
 (rf/reg-event-fx
  ::cancel-editing
- (fn [{db :db} _]
+ (fn [{db :db} [_ efx]]
    (let [id (get-in db [:route-map/current-route :params :uid])]
-     {:redirect {:uri (str "/patient/" id)}})))
+     {:dispatch [efx {:uri (str "/patient/" id)}]})))
 
 (rf/reg-sub
  edit-index
