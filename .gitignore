@@ -3,6 +3,7 @@ pom.xml.asc
 *.jar
 *.class
 /ui/resources/public/js
+/ui/build
 build.dev
 /lib/
 /classes/
