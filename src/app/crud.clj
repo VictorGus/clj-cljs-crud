@@ -21,13 +21,7 @@
     {:status 404
      :body {:message "Patient with this id hasn't been found"}}))
 
-(defn get-patient-by-identifier [{{:keys [iden]} :params :as req}]
-  {:status 200
-   :body {:entry (db/query-first {:select [:*]
-                                  :from [:patient]
-                                  :where (hsql/raw (str "resource->>'identifier' = " iden))})}})
-
-(defn delete-patient [{:keys [id] :as req}]
+(defn delete-patient [{{:keys [id]} :params :as req}]
   (let [deleted-rows (db/execute {:delete-from :patient
                                   :where [:= :id id]})]
     (if (= 0 deleted-rows)

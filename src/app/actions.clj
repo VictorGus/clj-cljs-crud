@@ -15,3 +15,10 @@
                                       :from [:patient]}
                                (not-empty query-params)
                                (assoc :where (hsql/raw (str "to_tsvector(resource)" " @@ " "to_tsquery ('" (str/join " & " query-params) "')")))))}}))
+
+
+(defn get-patient-by-identifier [{{:keys [iden]} :params :as req}]
+  {:status 200
+   :body {:entry (db/query-first {:select [:*]
+                                  :from [:patient]
+                                  :where (hsql/raw (str "resource->>'identifier' = " (str "'" iden "'")))})}})

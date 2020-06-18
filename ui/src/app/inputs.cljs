@@ -1,5 +1,6 @@
 (ns app.inputs
-  (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [reagent.core  :as r]))
 
 (defn text-input [form-path path & [attrs]]
   (let [node (rf/subscribe [:zf/node form-path path])
@@ -38,7 +39,9 @@
 
 (defn date-input [form-path path & [attrs]]
   (let [node (rf/subscribe [:zf/node form-path path])
+        state (r/atom {})
         attrs (assoc attrs :on-change (fn [e]
+                                        (swap! state assoc :value (.. e -target -value))
                                         (rf/dispatch [:zf/set-value form-path path (.. e -target -value)])))]
     (fn [& _]
       (let [*node @node
@@ -46,5 +49,6 @@
             errs (:errors *node)]
         [:input (-> attrs
                     (assoc :default-value v)
+                    (assoc :value v)
                     (assoc :type "date")
                     (update :class (fn [class] (str class (when errs " is-invalid") ))))]))))

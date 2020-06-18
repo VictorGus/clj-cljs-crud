@@ -4,6 +4,7 @@
             [app.pages :as pages]
             [app.styles :as styles]
             [zframes.redirect :as redirect]
+            [zframes.debounce :as debounce]
             [app.patient.model :as model]
             [clojure.string :as str]))
 
@@ -98,7 +99,7 @@
      [:div.flex-grow-1
       [:input.form-control {:type "text"
                             :placeholder "Поиск..."
-                            :on-change #(rf/dispatch [::redirect/set-params {:q (-> % .-target .-value)}])}]]
+                            :on-change #(debounce/debounce [::redirect/set-params {:q (-> % .-target .-value)}])}]]
      [:div
       [:button.btn.btn-outline-primary.btn-block.ml-2
        {:on-click #(rf/dispatch [::redirect/redirect {:uri "/patient/create"}])}
@@ -170,8 +171,7 @@
                                                                                 (-> js/window .-location .-href
                                                                                     (str/split #"#")
                                                                                     last) "/edit")}])}]]
-     [:p.delete-button.mt-2.mr-2 [:i.fas.fa-trash-alt {:on-click #(rf/dispatch [::model/delete-patient])}]]]
-    [:br]
+     [:p.delete-button.mt-2.mr-2 [:i.fas.fa-trash-alt {:on-click #(rf/dispatch [::model/delete-patient ::redirect/redirect])}]]]
     [:div.card
      [:div.card-header.info-header "Информация о пациенте"]
      (when (:address data)

@@ -47,8 +47,16 @@
      (update content :name (partial map #(str (get % :family) " " (str/join " " (get % :given))))))))
 
 (rf/reg-event-fx
+ ::success-delete
+ (fn [{db :db} [_ {{{{:keys [efx]} :params} :success} :request}]]
+   {:dispatch-n [[:flash/success {:msg "Пациент успешно удален"}]
+                 [efx {:uri ""}]]}))
+
+(rf/reg-event-fx
  ::delete-patient
- (fn [{db :db} _]
+ (fn [{db :db} [_ efx]]
    (let [id (get-in db [:route-map/current-route :params :uid])]
      {:xhr/fetch {:uri (str "/Patient/" id)
-                  :method "DELETE"}})))
+                  :method "DELETE"
+                  :success {:event ::success-delete
+                            :params {:efx efx}}}})))

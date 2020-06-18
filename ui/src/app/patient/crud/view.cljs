@@ -53,10 +53,8 @@
                    :color "white"
                    :background-color "#0069d9"}]))
 
-(defn edit [data]
-  [:div#patient-card-wrapper card-style
-   [:div#patient-card.col-md-6.offset-md-3
-    [:div.card
+(defn patient-card []
+  [:div.card
      [:div.card-header.info-header "Patient personal info"]
      [:form
       [:div.form-group.p-3
@@ -111,15 +109,30 @@
       [:div.row.mb-3
        [:div.col-6
         [:label.text-muted {:for "ssn-input"} "Номер полиса ОМС"]
-        [inputs/text-input form/form-path [:identifier]]]]]]
-    [:button.btn.btn-outline-primary.mt-3.mb-2.mr-2
-     {:on-click #(rf/dispatch [::model/save-changes])}
-     "Сохранить"]
-    [:button.btn.btn-outline-danger.mt-3.mb-2
-     {:on-click #(rf/dispatch [::model/cancel-editing ::redirect/redirect])}
-      "Отмена"]]])
+        [inputs/text-input form/form-path [:identifier]]]]]])
 
 (pages/reg-subs-page
  model/edit-index
  (fn [_]
-   [edit {}]))
+   [:div#patient-card-wrapper card-style
+    [:div#patient-card.col-md-6.offset-md-3
+     [patient-card]
+     [:button.btn.btn-outline-primary.mt-3.mb-2.mr-2
+      {:on-click #(rf/dispatch [::model/save-changes  ::redirect/redirect])}
+      "Сохранить"]
+     [:button.btn.btn-outline-danger.mt-3.mb-2
+      {:on-click #(rf/dispatch [::model/cancel-action ::redirect/redirect])}
+      "Отмена"]]]))
+
+(pages/reg-subs-page
+ model/create-index
+ (fn [_]
+   [:div#patient-card-wrapper card-style
+    [:div#patient-card.col-md-6.offset-md-3
+     [patient-card]
+     [:button.btn.btn-outline-primary.mt-3.mb-2.mr-2
+      {:on-click #(rf/dispatch [::model/patient-create ::redirect/redirect])}
+      "Создать"]
+     [:button.btn.btn-outline-danger.mt-3.mb-2
+      {:on-click #(rf/dispatch [::model/cancel-action  ::redirect/redirect])}
+      "Отмена"]]]))

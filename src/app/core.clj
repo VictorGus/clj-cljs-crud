@@ -17,7 +17,7 @@
                 [:id]     {:GET crud/get-patient-by-id
                            :DELETE crud/delete-patient
                            :PUT crud/patch-patient}
-                :GET  crud/get-patient-by-identifier
+                :GET  actions/get-patient-by-identifier
                 :POST crud/create-patient}})
 
 (defn params-to-keyword [params]

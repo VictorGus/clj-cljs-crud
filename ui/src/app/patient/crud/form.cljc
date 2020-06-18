@@ -23,7 +23,7 @@
                                  {:value "other"   :display "Другой"}
                                  {:value "unknown" :display "Неизвестен"}]}
             :identifier {:type :string
-                         :validators {:required {:message "Укажите номер ОМС"}}}}})
+                         :validators {:required {:message "Пожалуйста, укажите номер ОМС"}}}}})
 
 (rf/reg-event-fx
  ::init
@@ -41,7 +41,8 @@
         content (-> value
                     (assoc :name [(merge (select-keys value [:family])
                                          {:given [(:given value) (:patronymic value)]})])
-                    (dissoc [:family :given :patronymic]))]
+                    (dissoc :family :given :patronymic))]
     (if (empty? errors)
       (fx content)
-      {:db (assoc-in db form-path form)})))
+      {:db (assoc-in db form-path form)
+       :dispatch [:flash/danger {:msg (-> errors vals first :required)}]})))
