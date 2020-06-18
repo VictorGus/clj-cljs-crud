@@ -78,8 +78,9 @@
 (rf/reg-sub
  edit-index
  :<- [:xhr/response ::patient-edit]
- (fn [{{entry :entry} :data}]
-   {}))
+ :<- [:zf/collection-indexes form/form-path [:address]]
+ (fn [[{{entry :entry} :data} address-ids]]
+   address-ids))
 
 (def create-index ::create)
 
@@ -94,5 +95,6 @@
 
 (rf/reg-sub
  create-index
- (fn [_]
-   {}))
+ :<- [:zf/collection-indexes form/form-path [:address]]
+ (fn [address-ids]
+   address-ids))

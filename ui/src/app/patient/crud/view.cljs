@@ -4,6 +4,7 @@
             [app.pages              :as pages]
             [app.styles             :as styles]
             [clojure.string         :as str]
+            [zenform.model          :as zf]
             [app.inputs             :as inputs]
             [app.patient.crud.form  :as form]
             [zframes.redirect       :as redirect]))
@@ -48,14 +49,21 @@
       [:.icon.img
        {:fill "blue"}]]]]
    [:.info-item {:margin-right "10px"}]
+   [:.remove-icon {:display "none"}]
+   [:.address-section:hover [:.remove-icon {:cursor   "pointer"
+                                            :display  "block"
+                                            :position "absolute"
+                                            :right "0"
+                                            :margin-right "10x"
+                                            :z-index  "10"}]]
    [:.info-header {:font-size "22px"
                    :font-weight "900"
                    :color "white"
                    :background-color "#0069d9"}]))
 
-(defn patient-card []
+(defn patient-card [address-ids]
   [:div.card
-     [:div.card-header.info-header "Patient personal info"]
+     [:div.card-header.info-header "Информация о пациенте"]
      [:form
       [:div.form-group.p-3
        [:div.row.mb-3
@@ -79,30 +87,32 @@
          [inputs/select form/form-path [:gender] {:class "form-control selector"}]]]]]
      [:div.card-body
       [:h5.card-title "Адрес"]
-      ;; for [item (:address (first (:patient data)))]
-      [:div
-       [:div.row.mb-3.form-row
-        [:div.col
-         [:label.text-muted "Страна"]
-         [:input.form-control {:type "text"}]]
-        [:div.col
-         [:label.text-muted "Город"]
-         [:input.form-control {:type "text"}]]
-        [:div.col
-         [:label.text-muted "Почтовый индекс"]
-         [:input.form-control {:type "text"}]]
-        [:div.col
-         [:label.text-muted "Район"]
-         [:input.form-control {:type "text"}]]
-        [:i.fas.fa-trash-alt.remove-icon
-         {:on-click #(rf/dispatch [::model/remove-item])}]]
-       [:div.row
-        [:div.col-sm-6
-         [:label.text-muted "Улица"]
-         [:input.form-control {:type "text"}]]]]]
+      (for [id address-ids]
+        [:div.mb-3.address-section
+         [:div.row.mb-3.form-row
+          [:div.col
+           [:label.text-muted "Страна"]
+           [inputs/text-input form/form-path [:address id :country]]]
+          [:div.col
+           [:label.text-muted "Город"]
+           [inputs/text-input form/form-path [:address id :city]]]
+          [:div.col
+           [:label.text-muted "Почтовый индекс"]
+           [inputs/text-input form/form-path [:address id :postalCode]]]
+          [:div.col
+           [:label.text-muted "Район"]
+           [inputs/text-input form/form-path [:address id :state]]]
+          [:i.fas.fa-trash-alt.remove-icon
+           {:on-click #(rf/dispatch [:zf/remove-collection-item form/form-path [:address] id])}]]
+         [:div.row
+          [:div.col-sm-6
+           [:label.text-muted "Улица"]
+           [inputs/text-input form/form-path [:address id :line]]]]
+         (when (and (not= id (dec (count address-ids)))
+                    (> (count address-ids) 1))
+           [:hr])])]
      [:button.btn.btn-link.mt-2
-      {:on-click #(do
-                    (rf/dispatch [::model/add-item :address]))}
+      {:on-click #(rf/dispatch [:zf/add-collection-item form/form-path [:address]])}
       "+ Добавить адрес"]
      [:div.card-body
       [:h5.card-title "Идентификаторы"]
@@ -113,26 +123,43 @@
 
 (pages/reg-subs-page
  model/edit-index
- (fn [_]
-   [:div#patient-card-wrapper card-style
-    [:div#patient-card.col-md-6.offset-md-3
-     [patient-card]
-     [:button.btn.btn-outline-primary.mt-3.mb-2.mr-2
-      {:on-click #(rf/dispatch [::model/save-changes  ::redirect/redirect])}
-      "Сохранить"]
-     [:button.btn.btn-outline-danger.mt-3.mb-2
-      {:on-click #(rf/dispatch [::model/cancel-action ::redirect/redirect])}
-      "Отмена"]]]))
+ (fn [address-ids params]
+   [:div
+    [:nav {:aria-label "breadcrumb"}
+     [:ol.breadcrumb
+      [:li.breadcrumb-item
+       [:a {:href "#"} "Пациенты"]]
+      [:li.breadcrumb-item
+       [:a {:href (str "#/patient/" (:uid params))}
+        (:uid params)]]
+      [:li.breadcrumb-item.active
+       "Редактирование"]]]
+    [:div#patient-card-wrapper card-style
+     [:div#patient-card.col-md-6.offset-md-3
+      [patient-card address-ids]
+      [:button.btn.btn-outline-primary.mt-3.mb-2.mr-2
+       {:on-click #(rf/dispatch [::model/save-changes  ::redirect/redirect])}
+       "Сохранить"]
+      [:button.btn.btn-outline-danger.mt-3.mb-2
+       {:on-click #(rf/dispatch [::model/cancel-action ::redirect/redirect])}
+       "Отмена"]]]]))
 
 (pages/reg-subs-page
  model/create-index
- (fn [_]
-   [:div#patient-card-wrapper card-style
-    [:div#patient-card.col-md-6.offset-md-3
-     [patient-card]
-     [:button.btn.btn-outline-primary.mt-3.mb-2.mr-2
-      {:on-click #(rf/dispatch [::model/patient-create ::redirect/redirect])}
-      "Создать"]
-     [:button.btn.btn-outline-danger.mt-3.mb-2
-      {:on-click #(rf/dispatch [::model/cancel-action  ::redirect/redirect])}
-      "Отмена"]]]))
+ (fn [address-ids params]
+   [:div
+    [:nav {:aria-label "breadcrumb"}
+     [:ol.breadcrumb
+      [:li.breadcrumb-item
+       [:a {:href "#"} "Пациенты"]]
+      [:li.breadcrumb-item.active
+       "Создание"]]]
+    [:div#patient-card-wrapper card-style
+     [:div#patient-card.col-md-6.offset-md-3
+      [patient-card address-ids]
+      [:button.btn.btn-outline-primary.mt-3.mb-2.mr-2
+       {:on-click #(rf/dispatch [::model/patient-create ::redirect/redirect])}
+       "Создать"]
+      [:button.btn.btn-outline-danger.mt-3.mb-2
+       {:on-click #(rf/dispatch [::model/cancel-action  ::redirect/redirect])}
+       "Отмена"]]]]))

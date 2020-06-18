@@ -15,6 +15,7 @@
                                 :fields {:line       {:type :string}
                                          :city       {:type :string}
                                          :postalCode {:type :string}
+                                         :state      {:type :string}
                                          :country    {:type :string}}}}
             :birthDate  {:type :string}
             :gender     {:type :string
