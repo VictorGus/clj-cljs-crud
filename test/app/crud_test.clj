@@ -10,8 +10,6 @@
             [app.manifest      :as m]
             [clojure.test    :refer :all]))
 
-(core/app (mock/request :get "/Patient/pt-1"))
-
 (defn test-request [{:keys [uri request-method req-params]}]
   (let [resp (http/request
               (merge {:url            (str "http://localhost:9090" uri)
