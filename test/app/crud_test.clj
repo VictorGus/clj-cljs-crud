@@ -10,15 +10,6 @@
             [app.manifest      :as m]
             [clojure.test    :refer :all]))
 
-(defn test-request [{:keys [uri request-method req-params]}]
-  (let [resp (http/request
-              (merge {:url            (str "http://localhost:9090" uri)
-                      :accept         :json
-                      :as             :text
-                      :request-method request-method
-                      :content-type   :json} req-params))]
-    (json/parse-string (:body resp) true)))
-
 (use-fixtures :each
   (fn [f]
     (reset! db/config @db/test-config)
