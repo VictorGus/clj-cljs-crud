@@ -8,17 +8,18 @@
             [ring.middleware.json   :refer [wrap-json-response wrap-json-body]]
             [app.actions :as actions]
             [app.crud    :as crud]
+            [app.dbcore  :as db]
             [org.httpkit.server :as server]
             [clojure.string     :as str])
   (:gen-class))
 
 (def routes
-  {"Patient"   {"$search" {:GET actions/patient-search}
-                [:id]     {:GET crud/get-patient-by-id
-                           :DELETE crud/delete-patient
-                           :PUT crud/patch-patient}
-                :GET  actions/get-patient-by-identifier
-                :POST crud/create-patient}})
+  {"Patient"   {"$search" {:GET (actions/patient-search db/config)}
+                [:id]     {:GET (crud/get-patient-by-id db/config)
+                           :DELETE (crud/delete-patient db/config)
+                           :PUT (crud/patch-patient db/config)}
+                :GET  (actions/get-patient-by-identifier db/config)
+                :POST (crud/create-patient db/config)}})
 
 (defn params-to-keyword [params]
   (reduce-kv (fn [acc k v]

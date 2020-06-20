@@ -3,7 +3,7 @@
             [hikari-cp.core      :as hc]
             [clojure.java.jdbc   :as jdbc]
             [clj-postgresql.core :as pg]
-            [app.manifest :as m]))
+            [app.manifest        :as m]))
 
 (def pool-config (delay (pg/pool :host     (get-in m/app-config [:db :host])
                                  :port     (get-in m/app-config [:db :port])
@@ -12,16 +12,34 @@
                                  :dbname   (get-in m/app-config [:db :dbname])
                                  :hikari {:read-only true})))
 
-(defn query [query]
-  (->> query hsql/format
-       (jdbc/query @pool-config)))
+(def test-config (delay (pg/pool :host     (get-in m/app-config [:db :host])
+                                 :port     (get-in m/app-config [:db :port])
+                                 :user     (get-in m/app-config [:db :user])
+                                 :password (get-in m/app-config [:db :password])
+                                 :dbname   "fortest"
+                                 :hikari {:read-only true})))
 
-(defn query-first [query]
+(def config (atom @pool-config))
+
+(defn query [query ctx]
   (->> query hsql/format
-       (jdbc/query @pool-config)
+       (jdbc/query @ctx)))
+
+(defn query-first [query ctx]
+  (->> query hsql/format
+       (jdbc/query @ctx)
        first))
 
-(defn execute [query]
+(defn execute [query ctx]
   (->> query hsql/format
-       (jdbc/execute! @pool-config)
+       (jdbc/execute! @ctx)
        first))
+
+(defn execute-test [query]
+  (->> query hsql/format
+       (jdbc/execute! @test-config)
+       first))
+
+(defn truncate-test []
+  (jdbc/execute! @test-config "truncate patient"))
+

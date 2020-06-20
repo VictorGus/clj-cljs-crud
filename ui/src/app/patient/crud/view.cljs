@@ -54,7 +54,7 @@
                                             :display  "block"
                                             :position "absolute"
                                             :right "0"
-                                            :margin-right "10x"
+                                            :margin-right "10px"
                                             :z-index  "10"}]]
    [:.info-header {:font-size "22px"
                    :font-weight "900"
