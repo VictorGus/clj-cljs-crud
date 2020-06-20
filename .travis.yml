@@ -22,9 +22,9 @@ before_script:
   - make up
 
 script:
+  - make test
   - make build
   - make ui-build
-  - make test
 
 after_script:
   - make down
