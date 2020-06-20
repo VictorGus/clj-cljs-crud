@@ -18,7 +18,7 @@ build:
 	mv target/app-1.0.0-SNAPSHOT-standalone.jar app.jar
 
 ui-build:
-	cd ui && clj -m build
+	cd ui && clojure -m build
 
 run-jar:
 	java -jar app.jar
