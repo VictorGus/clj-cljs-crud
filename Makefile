@@ -28,5 +28,12 @@ test:
 
 up:
 	docker-compose up -d
+
 down:
 	docker-compose down
+
+docker-build:
+	docker build -f Dockerfile -t victor13533/web-test .
+
+docker-build-ui:
+	docker build -f Dockerfile-ui -t victor13533/web-test-ui .
