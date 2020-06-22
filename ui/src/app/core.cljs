@@ -29,8 +29,6 @@
     (fn []
       (let [page (get @pages/pages (:match @route))
             params (:params @route)]
-        (println @route)
-        (println @pages/pages)
         [layout/layout
          (if page
            [page params]
