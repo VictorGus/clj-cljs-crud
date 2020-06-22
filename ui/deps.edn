@@ -16,7 +16,6 @@
          zenform                   {:local/root "zenform"}
          hiccup                    {:mvn/version "1.0.5"}
          garden                    {:mvn/version "1.3.5"}
-         chrono                    {:local/root "../src/chrono"}
          route-map                 {:mvn/version "0.0.7-RC4"}
          cider/cider-nrepl         {:mvn/version "0.22.3"}
          cider/piggieback          {:mvn/version "0.4.0"}}

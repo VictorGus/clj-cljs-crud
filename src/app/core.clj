@@ -77,7 +77,7 @@
 
 (defn restart-server [] (stop-server) (start-server))
 
-(defn -main []
+(defn -main [& [_ _]]
   (start-server)
   (println "Server started"))
 
