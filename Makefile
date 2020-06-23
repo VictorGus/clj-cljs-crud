@@ -36,4 +36,8 @@ docker-build:
 	docker build -f Dockerfile -t victor13533/web-test .
 
 docker-build-ui:
-	docker build -f Dockerfile-ui -t victor13533/web-test-ui .
+	cp ui/resources/public/config.js ui/build/js/ && docker build -f Dockerfile-ui -t victor13533/web-test-ui .
+
+deployment:
+	kubectl apply -f ./deploy/backend.yaml && kubectl apply -f ./deploy/front-end.yaml && kubectl apply -f ./deploy/pg-cm.yaml
+
