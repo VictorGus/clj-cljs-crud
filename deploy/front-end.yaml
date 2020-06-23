@@ -50,10 +50,10 @@ spec:
       containers:
       - name: nginx
         image: "victor13533/web-test-ui"
-        volumeMounts:
-        - mountPath: /etc/nginx
-          readOnly: true
-          name: nginx-conf
+        # volumeMounts:
+        # - mountPath: /etc/nginx
+        #   readOnly: true
+        #   name: nginx-conf
       volumes:
       - name: nginx-conf
         configMap:
