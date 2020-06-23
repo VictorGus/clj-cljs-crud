@@ -35,6 +35,12 @@ down:
 docker-build:
 	docker build -f Dockerfile -t victor13533/web-test .
 
+pub:
+	docker push victor13533/web-test:latest
+
+pub-ui:
+	docker push victor13533/web-test-ui:latest
+
 docker-build-ui:
 	cp ui/resources/public/config.js ui/build/js/ && docker build -f Dockerfile-ui -t victor13533/web-test-ui .
 

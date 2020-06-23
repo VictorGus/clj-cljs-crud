@@ -28,6 +28,7 @@ spec:
   - protocol: "TCP"
     port: 80
     targetPort: 80
+  type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -49,11 +50,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: "victor13533/web-test-ui"
-        # volumeMounts:
-        # - mountPath: /etc/nginx
-        #   readOnly: true
-        #   name: nginx-conf
+        image: "victor13533/web-test-ui:latest"
       volumes:
       - name: nginx-conf
         configMap:

@@ -1,6 +1,7 @@
 (ns app.core
   (:require [clojure.java.io :as io]
             [route-map.core  :as rm]
+            [app.manifest    :as m]
             [cheshire.core   :as json]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.cors   :refer [wrap-cors]]
@@ -73,7 +74,10 @@
     (reset! state nil)))
 
 (defn start-server []
-  (reset! state (server/run-server app {:port 9090})))
+  (reset! state (server/run-server app {:port (as-> (get-in m/app-config [:app :port]) port
+                                                (cond-> port
+                                                  (string? port)
+                                                  Integer/parseInt))})))
 
 (defn restart-server [] (stop-server) (start-server))
 

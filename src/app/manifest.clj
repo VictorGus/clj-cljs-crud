@@ -5,4 +5,5 @@
         :port     (or (System/getenv "PGPORT")     5443)
         :user     (or (System/getenv "PGUSER")     "postgres")
         :password (or (System/getenv "PGPASSWORD") "postgres")
-        :dbname   (or (System/getenv "PGDATABASE") "testbase")}})
+        :dbname   (or (System/getenv "PGDATABASE") "testbase")}
+   :app {:port (or (System/getenv "APP_PORT") 9090)}})

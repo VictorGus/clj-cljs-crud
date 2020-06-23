@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: postgres-config
   labels:
-    app: postgres
+    app: test-db 
 data:
   POSTGRES_DB: testbase 
   POSTGRES_USER: postgres
@@ -16,19 +16,19 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres
+  name: test-db 
 spec:
   selector:
     matchLabels:
-      app: postgres 
+      app: test-db 
   replicas: 1
   template:
     metadata:
       labels:
-        app: postgres
+        app: test-db 
     spec:
       containers:
-        - name: postgres
+        - name: test-db 
           image: postgres:latest
           imagePullPolicy: "IfNotPresent"
           ports:
@@ -36,54 +36,52 @@ spec:
           envFrom:
             - configMapRef:
                 name: postgres-config
-          volumeMounts:
-            - mountPath: /var/lib/postgresql/data
-              name: testbase 
-      volumes:
-        - name: testbase
-          persistentVolumeClaim:
-            claimName: postgres-pv-claim
+      #     volumeMounts:
+      #       - mountPath: /var/lib/postgresql/data
+      #         name: testbase 
+      # volumes:
+      #   - name: testbase
+      #     persistentVolumeClaim:
+      #       claimName: volume-pg-hs 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: test-db 
   labels:
-    app: postgres
+    app: test-db 
 spec:
   type: NodePort
   ports:
    - port: 5443
      targetPort: 5432 
   selector:
-   app: postgres
----
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  name: postgres-pv-volume
-  labels:
-    type: local
-    app: postgres
-spec:
-  storageClassName: manual
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteMany
-  hostPath:
-    path: "/mnt/data"
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: postgres-pv-claim
-  labels:
-    app: postgres
-spec:
-  storageClassName: manual
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 5Gi
+   app: test-db 
+# ---
+# kind: PersistentVolume
+# apiVersion: v1
+# metadata:
+#   name: postgres-pv-volume
+#   labels:
+#     type: local
+#     app: test-db 
+# spec:
+#   capacity:
+#     storage: 1Gi
+#   accessModes:
+#     - ReadWriteMany
+#   hostPath:
+#     path: "/mnt/data"
+# ---
+# kind: PersistentVolumeClaim
+# apiVersion: v1
+# metadata:
+#   name: postgres-pv-claim
+#   labels:
+#     app: test-db 
+# spec:
+#   accessModes:
+#     - ReadWriteMany
+#   resources:
+#     requests:
+#       storage: 1Gi
