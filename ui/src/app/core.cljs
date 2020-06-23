@@ -4,7 +4,6 @@
             [zframes.xhr]
             [zframes.redirect :as redirect]
             [zframes.flash :as flash]
-            [zframes.cookies :as cookies]
             [zframes.routing]
             [app.routes :as routes]
             [app.pages :as pages]

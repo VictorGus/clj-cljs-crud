@@ -22,7 +22,6 @@
       (fn [] [view @m params]))))
 
 (defn reg-subs-page
-  "register subscribed page under keyword for routing"
   [key f & [layout-key]]
   (swap! pages assoc key (subscribed-page key f)))
 
