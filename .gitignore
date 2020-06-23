@@ -9,7 +9,7 @@ build.dev
 /classes/
 /target/
 /checkouts/
-/esdata/
+/pgdata/
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/

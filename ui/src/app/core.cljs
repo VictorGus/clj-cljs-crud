@@ -17,7 +17,8 @@
  [(rf/inject-cofx :window-location)]
  (fn [{location :location db :db} _]
    {:db (-> db
-            (assoc-in [:xhr :config :base-url] "http://localhost:9090")
+            (assoc-in [:xhr :config :base-url] (or (.-baseURL js/window)
+                                                   "http://localhost:9090"))
             (assoc :route-map/routes routes/routes))
     :route-map/start {}}))
 
