@@ -13,8 +13,7 @@
 
 (rf/reg-event-fx
  ::initialize
- [(rf/inject-cofx :window-location)]
- (fn [{location :location db :db} _]
+ (fn [{db :db} _]
    {:db (-> db
             (assoc-in [:xhr :config :base-url] (or (.-baseURL js/window)
                                                    "http://localhost:9090"))
