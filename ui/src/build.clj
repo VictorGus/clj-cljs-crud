@@ -10,8 +10,7 @@
    :output-dir    "build/js/out"
    :infer-externs true
    :optimizations :advanced
-   :main 'app.prod
-   :externs ["resources/public/js/externs/rutoken.ext.js"]})
+   :main 'app.prod})
 
 (defn -main []
   (api/build source-dir compiler-config))

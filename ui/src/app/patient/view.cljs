@@ -13,6 +13,7 @@
    [:.wrapper
     {:margin-top "20px"}]
    [:.patient-grid
+    {:width "100%"}
     [:.icon
      {:height "65px"
       :width "65px"
@@ -104,7 +105,7 @@
       [:button.btn.btn-outline-primary.btn-block.ml-2
        {:on-click #(rf/dispatch [::redirect/redirect {:uri "/patient/create"}])}
        "+ Создать"]]]
-    [:div.patient-grid.w-100.ml-1
+    [:div.patient-grid.ml-1
      (for [item data]
        [item-view item])]]))
 
