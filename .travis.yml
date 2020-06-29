@@ -23,6 +23,7 @@ before_script:
 
 script:
   - make test
+  - make ui-test
   - make build
   - make ui-build
 

@@ -19,8 +19,6 @@
                                  :dbname   "fortest"
                                  :hikari {:read-only true})))
 
-(def config (atom @pool-config))
-
 (defn query [query ctx]
   (->> query hsql/format
        (jdbc/query @ctx)))

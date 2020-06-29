@@ -26,6 +26,9 @@ run-jar:
 test:
 	clojure -A:test:runner
 
+ui-test:
+	cd ui && clj -A:test:runner
+
 up:
 	docker-compose up -d
 

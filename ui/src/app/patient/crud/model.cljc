@@ -9,6 +9,8 @@
  (fn [{db :db} [_ {{entry :entry} :data}]]
    {:dispatch [::form/init entry]}))
 
+(rf/dispatch [edit-index])
+
 (rf/reg-event-fx
  edit-index
  (fn [{db :db} [pid phase params]]

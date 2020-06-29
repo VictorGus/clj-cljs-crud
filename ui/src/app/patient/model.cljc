@@ -36,13 +36,13 @@
        (= :deinit phase)
        {}
        (or (= :params phase) (= :init phase))
-       {:xhr/fetch {:uri (str "/Patient/" id)
-                    :req-id ::patient-show}}))))
+       {:dispatch [:xhr/fetch {:uri (str "/Patient/" id)
+                               :req-id ::patient-show}]}))))
 
 (rf/reg-sub
  show-index
  :<- [:xhr/response ::patient-show]
- (fn [{{entry :entry} :data}]
+ (fn [{{entry :entry} :data} [_]]
    (let [content (:resource entry)]
      (update content :name (partial map #(str (get % :family) " " (str/join " " (get % :given))))))))
 
