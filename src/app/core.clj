@@ -14,20 +14,20 @@
             [clojure.string     :as str])
   (:gen-class))
 
-(def routes
-  {"Patient"   {"$search" {:GET (actions/patient-search db/config)}
-                [:id]     {:GET (crud/get-patient-by-id db/config)
-                           :DELETE (crud/delete-patient db/config)
-                           :PUT (crud/patch-patient db/config)}
-                :GET  (actions/get-patient-by-identifier db/config)
-                :POST (crud/create-patient db/config)}})
+(defn routes [ctx]
+  {"Patient"   {"$search" {:GET (actions/patient-search ctx)}
+                [:id]     {:GET (crud/get-patient-by-id ctx)
+                           :DELETE (crud/delete-patient ctx)
+                           :PUT (crud/patch-patient ctx)}
+                :GET  (actions/get-patient-by-identifier ctx)
+                :POST (crud/create-patient ctx)}})
 
 (defn params-to-keyword [params]
   (reduce-kv (fn [acc k v]
                (assoc acc (keyword k) v)) {} params))
 
-(defn handler [{meth :request-method uri :uri :as req}]
-  (if-let [res (rm/match [meth uri] routes)]
+(defn handler [ctx {meth :request-method uri :uri :as req}]
+  (if-let [res (rm/match [meth uri] (routes ctx))]
     ((:match res) (-> (assoc req :params (params-to-keyword (:params req)))
                       (update-in [:params] merge (:params res))))
     {:status 404 :body {:error "Not found"}}))
@@ -58,13 +58,14 @@
       (let [resp (dispatch req)]
         (-> resp (allow req))))))
 
-(def app
-  (-> handler
-      mk-handler
-      wrap-json-body
-      wrap-params
-      wrap-json-response
-      wrap-reload))
+(defn app [ctx]
+  (fn []
+    (-> (partial handler ctx)
+        mk-handler
+        wrap-json-body
+        wrap-params
+        wrap-json-response
+        wrap-reload)))
 
 (defonce state (atom nil))
 
@@ -74,10 +75,11 @@
     (reset! state nil)))
 
 (defn start-server []
-  (reset! state (server/run-server app {:port (as-> (get-in m/app-config [:app :port]) port
-                                                (cond-> port
-                                                  (string? port)
-                                                  Integer/parseInt))})))
+  (let [app* ((app db/pool-config))]
+    (reset! state (server/run-server app* {:port (as-> (get-in m/app-config [:app :port]) port
+                                                  (cond-> port
+                                                    (string? port)
+                                                    Integer/parseInt))}))))
 
 (defn restart-server [] (stop-server) (start-server))
 

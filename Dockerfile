@@ -1,5 +1,4 @@
 FROM openjdk:11-jre
-#EXPOSE 9090
 
 ADD app.jar /app.jar
 
