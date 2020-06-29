@@ -26,11 +26,12 @@
   (reduce-kv (fn [acc k v]
                (assoc acc (keyword k) v)) {} params))
 
-(defn handler [ctx {meth :request-method uri :uri :as req}]
-  (if-let [res (rm/match [meth uri] (routes ctx))]
-    ((:match res) (-> (assoc req :params (params-to-keyword (:params req)))
-                      (update-in [:params] merge (:params res))))
-    {:status 404 :body {:error "Not found"}}))
+(defn handler [ctx]
+  (fn [{meth :request-method uri :uri :as req}]
+    (if-let [res (rm/match [meth uri] (routes ctx))]
+      ((:match res) (-> (assoc req :params (params-to-keyword (:params req)))
+                        (update-in [:params] merge (:params res))))
+      {:status 404 :body {:error "Not found"}})))
 
 (defn preflight
   [{meth :request-method hs :headers :as req}]
@@ -59,7 +60,7 @@
         (-> resp (allow req))))))
 
 (defn app [ctx]
-  (-> (partial handler ctx)
+  (-> (handler ctx)
       mk-handler
       wrap-json-body
       wrap-params
