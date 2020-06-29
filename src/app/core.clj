@@ -59,13 +59,12 @@
         (-> resp (allow req))))))
 
 (defn app [ctx]
-  (fn []
-    (-> (partial handler ctx)
-        mk-handler
-        wrap-json-body
-        wrap-params
-        wrap-json-response
-        wrap-reload)))
+  (-> (partial handler ctx)
+      mk-handler
+      wrap-json-body
+      wrap-params
+      wrap-json-response
+      wrap-reload))
 
 (defonce state (atom nil))
 
@@ -75,7 +74,7 @@
     (reset! state nil)))
 
 (defn start-server []
-  (let [app* ((app db/pool-config))]
+  (let [app* (app db/pool-config)]
     (reset! state (server/run-server app* {:port (as-> (get-in m/app-config [:app :port]) port
                                                   (cond-> port
                                                     (string? port)

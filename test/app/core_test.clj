@@ -14,7 +14,7 @@
     (db/truncate-test)
     (f)))
 
-(def app* ((sut/app db/test-config)))
+(def app* (sut/app db/test-config))
 
 (deftest crud-read
   (testing "Get patient test"
