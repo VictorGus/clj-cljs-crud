@@ -36,14 +36,18 @@
 
 (defn create-patient [ctx]
   (fn [{:keys [body] :as req}]
-    (let [id (str (java.util.UUID/randomUUID))]
-      (db/execute {:insert-into :patient
-                   :values [{:id id
-                             :resource (hsql/call :cast (json/generate-string body) :jsonb)}]}
-                  ctx)
-      {:status 201
-       :body {:entry {:id id
-                      :resource body}}})))
+    (let [body (clojure.walk/keywordize-keys body)
+          id (str (java.util.UUID/randomUUID))
+          inserted-rows (db/execute (hsql/raw (str "insert into patient (id, resource)
+                                                    select '" id "', CAST('" (json/generate-string body) "' as jsonb)"
+                                                   " where not exists (select * from patient where resource->>'identifier' = " "'" (:identifier body) "')"))
+                                    ctx)]
+      (if (= 0 inserted-rows)
+        {:status 409
+         :body {:message "Patient with this identifier already exists"}}
+        {:status 201
+         :body {:entry {:id id
+                        :resource body}}}))))
 
 (defn patch-patient [ctx]
   (fn [{:keys [body] {id :id} :params :as req}]

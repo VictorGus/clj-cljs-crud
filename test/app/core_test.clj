@@ -40,11 +40,17 @@
                             (json/parse-string true))
           created-resource (-> (mock/request :get (str "/Patient/" (-> response-body :entry :id))) app*
                                :body
-                               (json/parse-string true))]
+                               (json/parse-string true))
+          duplicated-iden (-> (-> (mock/request :post "/Patient/")
+                                  (mock/json-body {:identifier "1234"
+                                                   :name [{:family "Foobar"}]})) app*
+                              :body
+                              (json/parse-string true))]
       (matcho/match {:identifier "1234"
                      :name [{:family "Test"}]} (get-in response-body [:entry :resource]))
       (matcho/match {:identifier "1234"
-                     :name [{:family "Test"}]} (get-in created-resource [:entry :resource])))))
+                     :name [{:family "Test"}]} (get-in response-body [:entry :resource]))
+      (matcho/match {:message "Patient with this identifier already exists"} duplicated-iden))))
 
 (deftest crud-delete
   (testing "Delete patient test"

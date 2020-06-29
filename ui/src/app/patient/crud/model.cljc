@@ -47,25 +47,13 @@
  (fn [{db :db} [_ efx]]
    (form/eval-form db (fn [values]
                         {:xhr/fetch {:uri "/Patient"
-                                     :success {:event ::send-data
-                                               :params {:values values
-                                                        :efx efx}}
-                                     :params {:iden (:identifier values)}}}))))
-
-(rf/reg-event-fx
- ::send-data
- (fn [{db :db} [_ {{{{:keys [efx values]} :params} :success} :request
-                   {entry :entry} :data}]]
-   (cond-> {}
-     (empty? entry)
-     (assoc :xhr/fetch {:uri "/Patient"
-                        :method "POST"
-                        :success {:event ::success-action
-                                  :params {:efx efx
-                                           :msg "Пациент успешно создан"}}
-                        :body values})
-     entry
-     (assoc :dispatch [:flash/danger {:msg "Пациент с таким ОМС уже существует"}]))))
+                                     :method "POST"
+                                     :success {:event ::success-action
+                                               :params {:efx efx
+                                                        :msg "Пациент успешно создан"}}
+                                     :error   {:event :flash/danger
+                                               :params {:msg "Пациент с таким ОМС уже существует"}}
+                                     :body values}}))))
 
 (rf/reg-event-fx
  ::cancel-action
