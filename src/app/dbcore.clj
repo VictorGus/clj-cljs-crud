@@ -40,4 +40,3 @@
 
 (defn truncate-test []
   (jdbc/execute! @test-config "truncate patient"))
-

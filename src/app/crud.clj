@@ -38,16 +38,29 @@
   (fn [{:keys [body] :as req}]
     (let [body (clojure.walk/keywordize-keys body)
           id (str (java.util.UUID/randomUUID))
-          inserted-rows (db/execute (hsql/raw (str "insert into patient (id, resource)
+          #_inserted-rows #_(db/execute (hsql/raw (str "insert into patient (id, resource)
                                                     select '" id "', CAST('" (json/generate-string body) "' as jsonb)"
                                                    " where not exists (select * from patient where resource->>'identifier' = " "'" (:identifier body) "')"))
                                     ctx)]
-      (if (= 0 inserted-rows)
+      #_(if (= 0 inserted-rows)
         {:status 409
          :body {:message "Patient with this identifier already exists"}}
         {:status 201
          :body {:entry {:id id
-                        :resource body}}}))))
+                        :resource body}}})
+      (try
+        (db/execute {:insert-into :patient
+                     :values [{:id id
+                               :resource (hsql/call :cast (json/generate-string body) ::jsonb)}]} ctx)
+        {:status 201
+         :body {:entry {:id id
+                        :resource body}}}
+        (catch Exception e (if (clojure.string/includes?
+                                (:cause (Throwable->map e))
+                                "unique constraint \"oms_unique_idx\"")
+                             {:status 409
+                              :body {:message "Patient with this identifier already exists"}}
+                             (throw e)))))))
 
 (defn patch-patient [ctx]
   (fn [{:keys [body] {id :id} :params :as req}]
